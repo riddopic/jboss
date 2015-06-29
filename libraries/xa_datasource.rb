@@ -35,6 +35,12 @@ class Chef
     # @action flush
     #   Flushes the data-source.
     #
+    # @action enable
+    #   Enables the data-source.
+    #
+    # @action reload
+    #   Reloads the JBoss instance.
+    #
     class JBossXADatasource < Chef::Resource
       include JBoss
 
@@ -44,7 +50,7 @@ class Chef
       state_attrs   :exists
 
       # Actions
-      actions        :add, :remove, :flush
+      actions        :add, :remove, :flush, :enable, :reload
       default_action :add
 
       # @!attribute name
@@ -290,6 +296,24 @@ class Chef
         end
       end
 
+      def action_enable
+        if @current_resource.exists?
+          converge_by "Enable the '#{r.name}' data-source" do
+            run("data-source enable --name=#{r.name}")
+          end
+          r.updated_by_last_action(true)
+        else
+          Chef::Log.debug "The data-source '#{r.name}' does not exists"
+        end
+      end
+
+      def action_reload
+        converge_by "Reload JBoss instance" do
+          run('reload')
+        end
+        r.updated_by_last_action(true)
+      end
+
       private
 
       # Boolean, true when it can read the current attributes from @path,
@@ -298,7 +322,7 @@ class Chef
       # @return [Hash, FalseClass]
       #
       def exists?
-        @current_attrs = exec_command(@path, :read_resource)
+        @current_attrs = exec_command(@path, 'read-resource')
         true
       rescue Mixlib::ShellOut::ShellCommandFailed
         false

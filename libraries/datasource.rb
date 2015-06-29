@@ -266,11 +266,21 @@ class Chef
       end
 
       def action_enable
-        run("data-source enable --name=#{r.name}")
+        if @current_resource.exists?
+          converge_by "Enable the '#{r.name}' data-source" do
+            run("data-source enable --name=#{r.name}")
+          end
+          r.updated_by_last_action(true)
+        else
+          Chef::Log.debug "The data-source '#{r.name}' does not exists"
+        end
       end
 
       def action_reload
-        run('reload')
+        converge_by "Reload JBoss instance" do
+          run('reload')
+        end
+        r.updated_by_last_action(true)
       end
 
       private
@@ -281,7 +291,7 @@ class Chef
       # @return [Hash, FalseClass]
       #
       def exists?
-        @current_attrs = exec_command(@path, :read_resource)
+        @current_attrs = exec_command(@path, 'read-resource')
         true
       rescue Mixlib::ShellOut::ShellCommandFailed
         false
