@@ -1,0 +1,45 @@
+# encoding: UTF-8
+#<% require 'kitchen-sync' %>
+---
+driver:
+  name: vagrant
+
+driver_config:
+  customize:
+    memory: 1024
+    cpus: 2
+
+provisioner:
+  name: chef_zero
+  attributes:
+    java:
+      install_flavor: oracle
+      jdk_version: 8
+      oracle:
+        accept_oracle_download_terms: true
+    jboss:
+      version: 6.4.0
+      url: http://repo.exanple.com/jboss/jboss-eap-6.4.0.zip
+      checksum: 27a6fd62a8bc4f660970ab282a4bc013934275e47a850a974db6c7d2c62cc50e
+
+platforms:
+  - name: ubuntu-14.04
+    run_list:
+    - recipe[apt]
+
+  - name: centos-6
+    run_list:
+    - recipe[yum]
+
+  - name: centos-7
+    run_list:
+    - recipe[yum]
+
+suites:
+  - name: default
+    run_list:
+    - recipe[garcon::development]
+    - recipe[garcon::civilize]
+    - recipe[jboss::default]
+    - recipe[test::default]
+    attributes:

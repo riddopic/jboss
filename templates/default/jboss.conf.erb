@@ -1,0 +1,93 @@
+#
+# ASHTUNG!  WARNING!  ASHTUNG!  WARNING!  ASHTUNG!  WARNING!  ASHTUNG!  WARNING!
+#
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
+#                                                                              #
+#              This file is maintained by the Chef JBoss Cookbook.             #
+#                     Any local changes will be overwritten!                   #
+#                                                                              #
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
+#
+# ASHTUNG!  WARNING!  ASHTUNG!  WARNING!  ASHTUNG!  WARNING!  ASHTUNG!  WARNING!
+#
+
+# Location of JDK
+#
+<%- if node[:jboss][:java][:enforce_java_home] %>
+<%- if node[:java][:java_home] && ::File.exists?(node[:java][:java_home]) %>
+JAVA_HOME="<%= node[:java][:java_home] %>"
+<%- else %>
+# JAVA_HOME="/usr/lib/jvm/default-java"
+<%- end %>
+<%- else %>
+# JAVA_HOME="/usr/lib/jvm/default-java"
+<%- end %>
+
+# Location of JBoss
+#
+<%- if node[:jboss][:home] && ::File.exists?(node[:jboss][:home]) %>
+JBOSS_HOME="<%= node[:jboss][:home] %>"
+<%- else %>
+# JBOSS_HOME="/opt/jboss"
+<%- end %>
+
+# The username who should own the process.
+#
+<%- if node[:jboss][:user] %>
+JBOSS_USER=<%= node[:jboss][:user] %>
+<%- else %>
+# JBOSS_USER=jboss
+<%- end %>
+
+# The mode JBoss should start, standalone or domain
+#
+<%- if node[:jboss][:mode] %>
+JBOSS_MODE=<%= node[:jboss][:mode] %>
+<%- else %>
+# JBOSS_MODE=standalone
+<%- end %>
+
+# Configuration for standalone mode
+#
+<%- if node[:jboss][:standalone_conf] %>
+JBOSS_CONFIG=<%= node[:jboss][:standalone_conf] %>
+<%- else %>
+# JBOSS_CONFIG=standalone.xml
+<%- end %>
+
+# Configuration for domain mode
+#
+<%- if node[:jboss][:dom][:conf] %>
+JBOSS_DOMAIN_CONFIG=<%= node[:jboss][:dom][:conf] %>
+<%- else %>
+# JBOSS_DOMAIN_CONFIG=domain.xml
+<%- end %>
+<%- if node[:jboss][:dom][:host_conf] %>
+JBOSS_HOST_CONFIG=<%= node[:jboss][:dom][:host_conf] %>
+<%- else %>
+# JBOSS_HOST_CONFIG=host-master.xml
+<%- end %>
+
+# The amount of time to wait for startup
+#
+<%- if node[:jboss][:initd][:startup_wait] %>
+STARTUP_WAIT=<%= node[:jboss][:initd][:startup_wait] %>
+<%- else %>
+# STARTUP_WAIT=60
+<%- end %>
+
+# The amount of time to wait for shutdown
+#
+<%- if node[:jboss][:initd][:shutdown_wait] %>
+SHUTDOWN_WAIT=<%= node[:jboss][:initd][:shutdown_wait] %>
+<%- else %>
+# SHUTDOWN_WAIT=60
+<%- end %>
+
+# Location to keep the console log
+#
+<%- if node[:jboss][:log][:dir] %>
+JBOSS_CONSOLE_LOG="<%= ::File.join(node[:jboss][:log][:dir], 'console.log') %>"
+<%- else %>
+# JBOSS_CONSOLE_LOG="/var/log/jboss/console.log"
+<%- end %>
