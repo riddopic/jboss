@@ -21,15 +21,11 @@ require_relative 'jboss'
 
 class Chef
   class Resource
-    # A resource used to add and remove JDBC drivers to the JBoss instance.
+    # A resource used to configure LDAP authentication.
     #
     # @provides :ldap_auth
-    #
-    # @action add
-    #   Add a new JDBC driver.
-    #
+    # @action create
     # @action remove
-    #   Removes the JDBC driver.
     #
     class JBossLDAPAuth < Chef::Resource
       include JBoss
@@ -40,7 +36,7 @@ class Chef
       state_attrs   :exists
 
       # Actions
-      actions        :add, :remove
+      actions        :create, :remove
       default_action :add
 
       # @!attribute name
@@ -127,12 +123,16 @@ class Chef
         @current_resource.exists = exists?
       end
 
-      def action_add
+      def action_create
         if @current_resource.exists?
-          Chef::Log.debug "The JDBC driver '#{r.name}' already exists"
+          Chef::Log.debug "#{r.base_dn}' LDAP authentication already configured"
         else
-          converge_by "Add the '#{r.name}' JDBC driver" do
-            add_attributes(@path, @current_attrs, attrs_to_add)
+          converge_by "Configure '#{r.base_dn}' LDAP authentication" do
+            params  = "connection=#{r.ldap_connection_name},"
+            params += "recursive=true,"
+            params += "base-dn=\"#{r.base_dn}\,"
+            params += "advanced-filter=\"#{r.advanced_filter}\""
+            exec_command(@path, :add, params)
           end
           r.updated_by_last_action(true)
         end
@@ -140,12 +140,23 @@ class Chef
 
       def action_remove
         if @current_resource.exists?
-          converge_by "Removing the '#{r.name}' JDBC driver" do
+          converge_by "Remove '#{r.base_dn}' LDAP authentication" do
             exec_command(@path, :remove)
           end
           r.updated_by_last_action(true)
         else
-          Chef::Log.debug "The JDBC driver '#{r.name}' does not exists"
+          Chef::Log.debug "'#{r.base_dn}' LDAP authentication is not configured"
+        end
+      end
+
+      def action_flush
+        if @current_resource.exists?
+          Chef::Log.debug "'#{r.base_dn}' LDAP authentication is not configured"
+        else
+          converge_by "Flush '#{r.base_dn}' LDAP authentication" do
+            update_attributes(@path, @current_attrs, {})
+          end
+          r.updated_by_last_action(true)
         end
       end
 
@@ -161,25 +172,6 @@ class Chef
         true
       rescue Mixlib::ShellOut::ShellCommandFailed
         false
-      end
-
-      def attrs_to_add
-        attrs = {
-          'driver-name' => r.driver_name,
-          'driver-module-name' => r.driver_module_name
-        }
-        if r.driver_module_slot
-          attrs['driver-module-slot'] = r.driver_module_slot
-        end
-        if r.driver_class_name
-          attrs['driver-class-name'] = r.driver_class_name
-        end
-        if r.driver_xa_datasource_class_name
-          attrs['driver-xa-datasource-class-name'] =
-            r.driver_xa_datasource_class_name
-        end
-
-        attrs
       end
     end
   end
