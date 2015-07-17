@@ -22,15 +22,53 @@ require 'fileutils'
 
 module Jboss
   module Helpers
+    #
+    # Invoke the action block in a separate run context and if any resources
+    # are modified within the sub context then mark this node as updated.
+    #
+    # @example
+    #   notifying_action :run do
+    #     template '/some/template' do
+    #       action :create
+    #     end
+    #   end
+    #
+    def notifying_action(key, &block)
+      action key do
+        cached_new_resource = new_resource
+        cached_current_resource = current_resource
+        sub_run_context = @run_context.dup
+        sub_run_context.resource_collection = Chef::ResourceCollection.new
 
+        begin
+          original_run_context, @run_context = @run_context, sub_run_context
+          instance_eval(&block)
+        ensure
+          @run_context = original_run_context
+        end
+
+        begin
+          Chef::Runner.new(sub_run_context).converge
+        ensure
+          if sub_run_context.resource_collection.any?(&:updated?)
+            new_resource.updated_by_last_action(true)
+          end
+        end
+      end
+    end
   end
-
   # A set of methods for using encrypted data bags or Chef Vault.
   #
   module Passwords
     # Library routine that returns an encrypted data bag value for a supplied
     # string. The key used in decrypting the encrypted value should be
     # located at `node[:jboss][:secret][:key_path]`.
+    #
+    # @param [String] bag_name
+    #   Name of the data bag to lookup.
+    #
+    # @param [String] index
+    #   The name of the key containing the encrypted item.
     #
     def secret(bag_name, index)
       case node[:jboss][:databag_type]
@@ -45,6 +83,14 @@ module Jboss
       end
     end
 
+    # Helper to lookup encrypted secrets.
+    #
+    # @param [String] bag_name
+    #   Name of the data bag to lookup.
+    #
+    # @param [String] index
+    #   The name of the key containing the encrypted item.
+    #
     def encrypted_secret(bag_name, index)
       key_path = node[:jboss][:secret][:key_path]
       Chef::Log.info "Loading encrypted databag #{bag_name}.#{index} " \
@@ -53,11 +99,27 @@ module Jboss
       Chef::EncryptedDataBagItem.load(bag_name, index, secret)[index]
     end
 
+    # Helper to lookup standard secrets.
+    #
+    # @param [String] bag_name
+    #   Name of the data bag to lookup.
+    #
+    # @param [String] index
+    #   The name of the key containing the encrypted item.
+    #
     def standard_secret(bag_name, index)
       Chef::Log.info "Loading databag #{bag_name}.#{index}"
       Chef::DataBagItem.load(bag_name, index)[index]
     end
 
+    # Helper to lookup vault secrets.
+    #
+    # @param [String] bag_name
+    #   Name of the data bag to lookup.
+    #
+    # @param [String] index
+    #   The name of the key containing the encrypted item.
+    #
     def vault_secret(bag_name, index)
       begin
         require 'chef-vault'

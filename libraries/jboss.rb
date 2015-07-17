@@ -100,7 +100,6 @@ module JBoss
     #   populated with results of the command.
     #
     def run(cmd)
-      Chef::Log.warn "#{jboss_cli} '#{cmd}'".purple
       shell_out! "#{jboss_cli} '#{cmd}'", options
     end
 

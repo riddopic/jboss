@@ -17,6 +17,23 @@
 # limitations under the License.
 #
 
+# jboss_service 'default' do
+#   version  '6.4.0'
+#   source   'http://repo.exanple.com/jboss/jboss-eap-6.4.0.zip'
+#   checksum '27a6fd62a8bc4f660970ab282a4bc013934275e47a850a974db6c7d2c62cc50e'
+#   action :create
+# end
+#
+# jboss_config 'default' do
+#   instance 'foo'
+#   source 'hello.conf.erb'
+#   action :create
+# end
+#
+# jboss_user 'admin' do
+#   password 's3cR3t$'
+# end
+
 jboss_module 'com.oracle.jdbc' do
   resource_url 'http://repo.mudbox.dev/jboss/ojdbc6.jar'
   dependencies 'javax.api,javax.transaction.api'

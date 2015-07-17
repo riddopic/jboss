@@ -351,12 +351,6 @@ class Chef
             }
           }
         }
-        # attrs['xa-datasource-properties']['URL'] = {}
-        # attrs['xa-datasource-properties']['URL']['value'] = r.connection_url
-        # attrs['xa-datasource-properties']['User'] = {}
-        # attrs['xa-datasource-properties']['User']['value'] = r.user_name
-        # attrs['xa-datasource-properties']['Password'] = {}
-        # attrs['xa-datasource-properties']['Password']['value'] = r.password
 
         attrs['min-pool-size'] = r.min_pool_size if r.min_pool_size
         attrs['max-pool-size'] = r.max_pool_size if r.max_pool_size

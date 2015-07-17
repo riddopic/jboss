@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-if platform_family?('debian')
+if platform_family? 'debian'
   include_recipe 'apt::default'
 end
 
@@ -28,7 +28,7 @@ Chef::Recipe.send(:include, Garcon)
 
 chef_gem 'rboss' do
   compile_time(false) if respond_to?(:compile_time)
-  not_if  { gem_installed?('rboss') }
+  not_if  { gem_installed? 'rboss' }
   action   :install
 end
 
@@ -80,39 +80,39 @@ end
 
 config_dir = ::File.join(node[:jboss][:home], 'standalone', 'configuration')
 
-template ::File.join(config_dir, node[:jboss][:standalone_conf]) do
-  source "#{node[:jboss][:standalone_conf]}.erb"
-  user      node[:jboss][:user]
-  group     node[:jboss][:group]
-  mode      00600
-  variables(
-    port_binding_offset:  node[:jboss][:port_binding_offset],
-    mgmt_int:             node[:jboss][:mgmt_bind_addr],
-    native_mgmt_port:     node[:jboss][:native_mgmt_port],
-    http_mgmt_port:       node[:jboss][:http_mgmt_port],
-    https_mgmt_port:      node[:jboss][:https_mgmt_port],
-    pub_int:              node[:jboss][:pub_bind_addr],
-    pub_http_port:        node[:jboss][:http_port],
-    pub_https_port:       node[:jboss][:https_port],
-    wsdl_host:            node[:jboss][:wsdl_host],
-    ajp_port:             node[:jboss][:ajp_port],
-    smtp_host:            node[:jboss][:smtp][:host],
-    smtp_port:            node[:jboss][:smtp][:port],
-    smtp_ssl:             node[:jboss][:smtp][:ssl],
-    smtp_user:            node[:jboss][:smtp][:username],
-    smtp_pass:            node[:jboss][:smtp][:password],
-    acp:                  node[:jboss][:acp],
-    s3_access_key:        node[:jboss][:aws][:s3_access_key],
-    s3_secret_access_key: node[:jboss][:aws][:s3_secret_access_key],
-    s3_bucket:            node[:jboss][:aws][:s3_bucket]
-  )
-  notifies :restart, 'service[jboss]'
-  only_if {
-    node[:jboss][:enforce_config] || !::File.exist?(
-      ::File.join(node[:jboss][:home], '.chef_deployed')
-    )
-  }
-end
+# template ::File.join(config_dir, node[:jboss][:standalone_conf]) do
+#   source "#{node[:jboss][:standalone_conf]}.erb"
+#   user      node[:jboss][:user]
+#   group     node[:jboss][:group]
+#   mode      00600
+#   variables(
+#     port_binding_offset:  node[:jboss][:port_binding_offset],
+#     mgmt_int:             node[:jboss][:mgmt_bind_addr],
+#     native_mgmt_port:     node[:jboss][:native_mgmt_port],
+#     http_mgmt_port:       node[:jboss][:http_mgmt_port],
+#     https_mgmt_port:      node[:jboss][:https_mgmt_port],
+#     pub_int:              node[:jboss][:pub_bind_addr],
+#     pub_http_port:        node[:jboss][:http_port],
+#     pub_https_port:       node[:jboss][:https_port],
+#     wsdl_host:            node[:jboss][:wsdl_host],
+#     ajp_port:             node[:jboss][:ajp_port],
+#     smtp_host:            node[:jboss][:smtp][:host],
+#     smtp_port:            node[:jboss][:smtp][:port],
+#     smtp_ssl:             node[:jboss][:smtp][:ssl],
+#     smtp_user:            node[:jboss][:smtp][:username],
+#     smtp_pass:            node[:jboss][:smtp][:password],
+#     acp:                  node[:jboss][:acp],
+#     s3_access_key:        node[:jboss][:aws][:s3_access_key],
+#     s3_secret_access_key: node[:jboss][:aws][:s3_secret_access_key],
+#     s3_bucket:            node[:jboss][:aws][:s3_bucket]
+#   )
+#   notifies :restart, 'service[jboss]'
+#   only_if {
+#     node[:jboss][:enforce_config] || !::File.exist?(
+#       ::File.join(node[:jboss][:home], '.chef_deployed')
+#     )
+#   }
+# end
 
 template ::File.join(config_dir, 'mgmt-users.properties') do
   user      node[:jboss][:user]
