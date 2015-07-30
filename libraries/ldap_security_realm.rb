@@ -160,7 +160,7 @@ class Chef
       def action_remove
         if @current_resource.exists?
           converge_by "Remove '#{r.base_dn}' security realm" do
-            exec_command(@path, :remove)
+            exec_cmd(@path, :remove)
           end
           r.updated_by_last_action(true)
         else
@@ -173,7 +173,7 @@ class Chef
           Chef::Log.debug "'#{r.base_dn}' security realm is not configured"
         else
           converge_by "Flush '#{r.base_dn}' security realm" do
-            update_attributes(@path, @current_attrs, {})
+            update_attributes(@path, @current_attributes, {})
           end
           r.updated_by_last_action(true)
         end
@@ -187,7 +187,7 @@ class Chef
       # @return [Hash, FalseClass]
       #
       def exists?
-        @current_attrs = exec_command(@path, 'read-resource', 'recursive=true')
+        @current_attributes = exec_cmd(@path, 'read-resource', 'recursive=true')
         true
       rescue Mixlib::ShellOut::ShellCommandFailed
         false

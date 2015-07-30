@@ -107,28 +107,26 @@ module JBoss
     # @return [Hash]
     #   A Hash containing a JBoss CLI command output.
     #
-    def parse_cli_result_as_map(cli)
-      cli = cli.gsub(/=> ([0-9]+)L(,|\s*\})/,'=> \1\2')
-      cli = cli.gsub(/=> undefined(,|\s*\})/,'=> "__undefined__"\1')
-      cli = cli.gsub(/\[(\s*\([^\(\)\[\]]*\)(,\s*\([^\(\)\[\]]*\))*\s*)\]/m) do
+    def parse_result(out)
+      out = out.gsub(/=> ([0-9]+)L(,|\s*\})/,'=> \1\2')
+               .gsub(/=> undefined(,|\s*\})/,'=> "__undefined__"\1')
+               .gsub(/\[(\s*\([^\(\)\[\]]*\)(,\s*\([^\(\)\[\]]*\))*\s*)\]/m) do
         array_group = $1
-        result = array_group.gsub(/\(([^\(\)]*)\)/) do
-          key_group = $1
-        end
+        result = array_group.gsub(/\(([^\(\)]*)\)/) { key_group = $1 }
         '{' + result + '}'
       end
-      failure = cli.gsub(/.*("failure-description" => ".*[^\\]",).*/m,'\1')
+      failure = out.gsub(/.*("failure-description" => ".*[^\\]",).*/m,'\1')
       oneline_failure = failure.gsub(/[\r\n]/,'')
-      cli  = cli.gsub(failure, oneline_failure)
-      cli  = cli.gsub('=>',':')
-      hash = MultiJson.decode(cli)
+      out  = out.gsub(failure, oneline_failure)
+      out  = out.gsub('=>',':')
+      hash = MultiJson.decode(out)
       if hash['outcome'] == 'failed'
         raise "JBoss-CLI failure: '#{hash['failure-description']}'"
       end
       to_strongly_typed_hash hash['result']
     end
 
-    # Convert cli raw values in the given hash to strongly typed values.
+    # Convert CLI raw values in the given hash to strongly typed values.
     # If the value is an Hash, convert it (recurs call).
     #
     # @param [String] cli_hash

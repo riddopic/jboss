@@ -91,9 +91,9 @@ module JBoss
     #     * key: Boolean (true/false)
     #     * key: Hash
     #
-    def exec_command(path, command, params = nil)
-      output = run_cli_command(path, command, params)
-      parse_cli_result_as_map(output)
+    def exec_cmd(path, command, params = nil)
+      result = run_cli_command path, command, params
+      parse_result(result)
     end
 
     # Adds attributes.

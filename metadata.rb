@@ -23,7 +23,7 @@ maintainer_email 'riddopic@gmail.com'
 license          'Apache 2.0'
 description      'Installs/Configures JBOSS'
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.0.2'
+version          '0.1.4'
 
 %w[amazon centos debian fedora oracle redhat ubuntu].each { |os| supports os }
 

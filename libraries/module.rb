@@ -178,7 +178,7 @@ class Chef
       #
       def has_driver?
         shell_out(
-          "#{jboss_cli} '#{@path}:installed-drivers-list'", options
+          "#{jboss_cli} '#{@path}:installed-drivers-list'", cli_options
         ).stdout.include? r.name
       end
 

@@ -38,11 +38,11 @@ end
 
 user node[:jboss][:user] do
   comment 'JBoss System User'
-  shell   '/sbin/nologin'
+  shell   '/bin/bash'
   home     node[:jboss][:home]
   gid      node[:jboss][:group]
   system   node[:jboss][:system_account]
-  action [:create, :lock]
+  action  :create
 end
 
 package 'libaio' do
@@ -78,7 +78,7 @@ template '/etc/default/jboss.conf' do
   mode    00644
 end
 
-config_dir = ::File.join(node[:jboss][:home], 'standalone', 'configuration')
+# config_dir = ::File.join(node[:jboss][:home], 'standalone', 'configuration')
 
 # template ::File.join(config_dir, node[:jboss][:standalone_conf]) do
 #   source "#{node[:jboss][:standalone_conf]}.erb"
@@ -114,43 +114,43 @@ config_dir = ::File.join(node[:jboss][:home], 'standalone', 'configuration')
 #   }
 # end
 
-template ::File.join(config_dir, 'mgmt-users.properties') do
-  user      node[:jboss][:user]
-  group     node[:jboss][:group]
-  mode      00600
-  variables mgmt_users: node[:jboss][:users][:mgmt]
-end
-
-template ::File.join(config_dir, 'application-users.properties') do
-  user      node[:jboss][:user]
-  group     node[:jboss][:group]
-  mode      00600
-  variables app_users: node[:jboss][:users][:app]
-end
-
-template ::File.join(config_dir, 'application-roles.properties') do
-  user      node[:jboss][:user]
-  group     node[:jboss][:group]
-  mode      00600
-  variables app_roles: node[:jboss][:roles][:app]
-end
-
-template ::File.join(node[:jboss][:home], 'bin', 'standalone.conf') do
-  user      node[:jboss][:user]
-  group     node[:jboss][:group]
-  mode      00644
-  variables java_opts: node[:jboss][:java_opts]
-  notifies :restart, 'service[jboss]'
-end
-
-template ::File.join(node[:jboss][:home], 'bin', 'domain.conf') do
-  user      node[:jboss][:user]
-  group     node[:jboss][:group]
-  mode      00644
-  variables java_opts: node[:jboss][:java_opts]
-  notifies :restart, 'service[jboss]'
-  only_if { node[:jboss][:mode] == 'domain' }
-end
+# template ::File.join(config_dir, 'mgmt-users.properties') do
+#   user      node[:jboss][:user]
+#   group     node[:jboss][:group]
+#   mode      00600
+#   variables mgmt_users: node[:jboss][:users][:mgmt]
+# end
+#
+# template ::File.join(config_dir, 'application-users.properties') do
+#   user      node[:jboss][:user]
+#   group     node[:jboss][:group]
+#   mode      00600
+#   variables app_users: node[:jboss][:users][:app]
+# end
+#
+# template ::File.join(config_dir, 'application-roles.properties') do
+#   user      node[:jboss][:user]
+#   group     node[:jboss][:group]
+#   mode      00600
+#   variables app_roles: node[:jboss][:roles][:app]
+# end
+#
+# template ::File.join(node[:jboss][:home], 'bin', 'standalone.conf') do
+#   user      node[:jboss][:user]
+#   group     node[:jboss][:group]
+#   mode      00644
+#   variables java_opts: node[:jboss][:java_opts]
+#   notifies :restart, 'service[jboss]'
+# end
+#
+# template ::File.join(node[:jboss][:home], 'bin', 'domain.conf') do
+#   user      node[:jboss][:user]
+#   group     node[:jboss][:group]
+#   mode      00644
+#   variables java_opts: node[:jboss][:java_opts]
+#   notifies :restart, 'service[jboss]'
+#   only_if { node[:jboss][:mode] == 'domain' }
+# end
 
 logrotate_app 'jboss' do
   cookbook 'logrotate'

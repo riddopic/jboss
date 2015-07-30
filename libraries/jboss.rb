@@ -19,7 +19,6 @@
 
 require_relative 'validations'
 require_relative 'formatters'
-require_relative 'helpers'
 require_relative 'cli'
 
 module JBoss
@@ -68,7 +67,7 @@ module JBoss
     #
     # @return [Hash]
     #
-    def options
+    def cli_options
       { returns: [0],
         user: node[:jboss][:user],
         cwd:  node[:jboss][:home]
@@ -100,7 +99,7 @@ module JBoss
     #   populated with results of the command.
     #
     def run(cmd)
-      shell_out! "#{jboss_cli} '#{cmd}'", options
+      shell_out! "#{jboss_cli} '#{cmd}'", cli_options
     end
 
     # Provide a common Monitor to all providers for locking.

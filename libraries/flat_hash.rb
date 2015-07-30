@@ -17,5 +17,23 @@
 # limitations under the License.
 #
 
-include_recipe 'java::default'
-include_recipe 'jboss::install'
+# An subclass of Hash to manage cli conversion for some types
+class FlatHash < Hash
+  include JBoss::CLI
+
+  def initialize(hash = {})
+    super
+    self.merge!(hash)
+  end
+
+  def to_s
+    # Converts a hash into its equivalent respecting CLI syntax.
+    # Supports nested hashes.
+    #
+    result = ''
+    self.each do |key, value|
+      result += "\"#{key}\"=>" + to_cli_value(value) + ','
+    end
+    result = '{' + result.chomp(',') + '}'
+  end
+end

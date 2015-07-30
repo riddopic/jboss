@@ -237,7 +237,7 @@ class Chef
           Chef::Log.debug "The data-source '#{r.name}' already exists"
         else
           converge_by "Add the '#{r.name}' data-source" do
-            add_attributes(@path, @current_attrs, attrs_to_add)
+            add_attributes(@path, @current_attributes, attributes_to_add)
           end
           r.updated_by_last_action(true)
         end
@@ -246,7 +246,7 @@ class Chef
       def action_remove
         if @current_resource.exists?
           converge_by "Removing the '#{r.name}' data-source" do
-            exec_command(@path, :remove)
+            exec_cmd(@path, :remove)
           end
           r.updated_by_last_action(true)
         else
@@ -259,7 +259,7 @@ class Chef
           Chef::Log.debug "The data-source '#{r.name}' already exists"
         else
           converge_by "Add the '#{r.name}' data-source" do
-            update_attributes(@path, @current_attrs, attrs_to_add)
+            update_attributes(@path, @current_attributes, attributes_to_add)
           end
           r.updated_by_last_action(true)
         end
@@ -291,13 +291,13 @@ class Chef
       # @return [Hash, FalseClass]
       #
       def exists?
-        @current_attrs = exec_command(@path, 'read-resource')
+        @current_attributes = exec_cmd(@path, 'read-resource')
         true
       rescue Mixlib::ShellOut::ShellCommandFailed
         false
       end
 
-      def attrs_to_add
+      def attributes_to_add
         attrs = {
           'jndi-name' => r.driver_name,
           'driver-name' => r.driver_name,

@@ -127,7 +127,7 @@ class Chef
           Chef::Log.debug "#{r.name}' the log handlers already configured"
         else
           converge_by "Configure '#{r.name}' log handlers" do
-            add_attributes @path, @current_attrs, attrs_to_add
+            add_attributes @path, @current_attributes, attributes_to_add
           end
           r.updated_by_last_action(true)
         end
@@ -136,7 +136,7 @@ class Chef
       def action_remove
         if @current_resource.exists?
           converge_by "Remove '#{r.name}' log handlers" do
-            exec_command @path, :remove
+            exec_cmd @path, :remove
           end
           r.updated_by_last_action(true)
         else
@@ -149,7 +149,7 @@ class Chef
           Chef::Log.debug "'#{r.name}' log handlers is not configured"
         else
           converge_by "Flush '#{r.name}' log handlers" do
-            update_attributes @path, @current_attrs, attrs_to_add
+            update_attributes @path, @current_attributes, attributes_to_add
           end
           r.updated_by_last_action(true)
         end
@@ -163,13 +163,13 @@ class Chef
       # @return [Hash, FalseClass]
       #
       def exists?
-        @current_attrs = exec_command @path, 'read-resource', 'recursive=true'
+        @current_attributes = exec_cmd @path, 'read-resource', 'recursive=true'
         true
       rescue Mixlib::ShellOut::ShellCommandFailed
         false
       end
 
-      def attrs_to_add
+      def attributes_to_add
         attrs = { 'level' => r.level, 'formatter' => r.formatter }
         attrs.merge(r.custom_options) if r.custom_options
         if r.custom_options && r.custom_options.file
