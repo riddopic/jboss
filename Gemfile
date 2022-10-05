@@ -20,13 +20,13 @@
 source 'https://rubygems.org'
 
 group :lint do
-  gem 'foodcritic', '~> 4.0'
-  gem 'rubocop',    '~> 0.31'
+  gem 'foodcritic', '~> 4.0', '>= 4.0.0'
+  gem 'rubocop', '~> 0.49', '>= 0.49.0'
 end
 
 group :unit do
-  gem 'berkshelf', '~> 3'
-  gem 'chefspec',  '~> 4.2'
+  gem 'berkshelf', '~> 4', '>= 4.2.3'
+  gem 'chefspec', '~> 4.2', '>= 4.2.0'
 end
 
 group :kitchen_common do
@@ -40,7 +40,7 @@ end
 
 group :development do
   gem 'chef-zero'
-  gem 'yard'
+  gem 'yard', '>= 0.9.20'
   gem 'guard'
   gem 'guard-kitchen'
   gem 'guard-foodcritic'
