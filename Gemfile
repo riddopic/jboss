@@ -20,7 +20,7 @@
 source 'https://rubygems.org'
 
 group :lint do
-  gem 'foodcritic', '~> 4.0'
+  gem 'foodcritic', '~> 5.0', '>= 5.0.0'
   gem 'rubocop',    '~> 0.31'
 end
 
@@ -43,7 +43,7 @@ group :development do
   gem 'yard'
   gem 'guard'
   gem 'guard-kitchen'
-  gem 'guard-foodcritic'
+  gem 'guard-foodcritic', '>= 1.1.1'
   gem 'guard-rubocop'
   gem 'pry-nav'
 end
